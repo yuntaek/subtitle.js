@@ -94,9 +94,6 @@ The module exports the following functions:
 * [`map`](#map)
 * [`filter`](#filter)
 * [`resync`](#resync)
-* [`parseTimestamp`](#parseTimestamp)
-* [`parseTimestamps`](#parseTimestamps)
-* [`formatTimestamp`](#formatTimestamp)
 
 ### parse
 
@@ -249,54 +246,6 @@ readableStream
 
 // Delay 250ms
 stream.pipe(resync(captions, -250))
-```
-
-### parseTimestamp
-
-- `parseTimestamp(timestamp: string): number`
-
-Receives a timestamp (SRT or VTT) and returns its value in milliseconds:
-
-```ts
-import { parseTimestamp } from 'subtitle'
-
-parseTimestamp('00:00:24,400')
-// => 24400
-
-parseTimestamp('00:24.400')
-// => 24400
-```
-
-### parseTimestamps
-
-- `parseTimestamps(timestamps: string): Timestamp`
-
-It receives a timestamps string, like `00:01:00,500 --> 00:01:10,800`. It also supports VTT formats like `12:34:56,789 --> 98:76:54,321 align:middle line:90%`.
-
-```ts
-import { parseTimestamps } from 'subtitle'
-
-parseTimestamps('00:01:00,500 --> 00:01:10,800')
-// => { start: 60500, end: 70800 }
-
-parseTimestamps('12:34:56,789 --> 98:76:54,321 align:middle line:90%')
-// => { start: 45296789, end: 357414321, settings: 'align:middle line:90%' }
-```
-
-### formatTimestamp
-
-- `formatTimestamp(timestamp: number, options?: { format: 'SRT' | 'vtt' }): string`
-
-It receives a timestamp in milliseconds and returns it formatted as SRT or VTT:
-
-```ts
-import { formatTimestamp } from 'subtitle'
-
-formatTimestamp(142542)
-// => '00:02:22,542'
-
-formatTimestamp(142542, { format: 'WebVTT' })
-// => '00:02:22.542'
 ```
 
 ## Examples
