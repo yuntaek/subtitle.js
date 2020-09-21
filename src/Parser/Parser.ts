@@ -11,6 +11,7 @@ export class Parser {
   protected buffer: string[] = []
   protected line: string = ''
   protected hasContentStarted: boolean = false
+  protected expect: string = ''
 
   public constructor({ push }: { push: Pusher }) {
     this.push = push
@@ -31,7 +32,13 @@ export class Parser {
     this.row++
   }
 
-  protected processLine() {}
+  protected getParsers() {
+    return {}
+  }
+
+  protected processLine() {
+    ;(this.getParsers() as any)[this.expect]()
+  }
 
   public flush() {}
 

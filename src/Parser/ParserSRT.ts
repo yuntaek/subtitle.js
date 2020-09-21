@@ -5,21 +5,10 @@ export type Expectation = 'header' | 'id' | 'timestamp' | 'text'
 
 export class ParserSRT extends Parser {
   private isWebVTT: boolean = false
-  private expect: Expectation = 'header'
+  protected expect: Expectation = 'header'
 
   protected reTimestamp = /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/
   protected reTimestampGroup = /^(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})$/
-
-  protected processLine() {
-    const parse = {
-      header: this.parseHeader,
-      id: this.parseId,
-      timestamp: this.parseTimestamp,
-      text: this.parseText
-    }[this.expect]
-
-    parse.call(this, this.line)
-  }
 
   public flush() {
     if (this.buffer.length > 0) {
@@ -27,35 +16,44 @@ export class ParserSRT extends Parser {
     }
   }
 
-  private parseHeader(line: string) {
+  protected getParsers() {
+    return {
+      header: this.parseHeader.bind(this),
+      id: this.parseId.bind(this),
+      timestamp: this.parseTimestamp.bind(this),
+      text: this.parseText.bind(this)
+    }
+  }
+
+  private parseHeader() {
     if (!this.isWebVTT) {
-      this.isWebVTT = /^WEBVTT/.test(line)
+      this.isWebVTT = /^WEBVTT/.test(this.line)
 
       if (this.isWebVTT) {
         this.node.type = 'header'
       } else {
-        this.parseId(line)
+        this.parseId()
         return
       }
     }
 
-    this.buffer.push(line)
+    this.buffer.push(this.line)
 
-    if (!line) {
+    if (!this.line) {
       this.expect = 'id'
       return
     }
   }
 
-  private parseId(line: string) {
+  private parseId() {
     this.expect = 'timestamp'
 
     if (this.node.type === 'header') {
       this.pushNode()
     }
 
-    if (!this.isIndex(line)) {
-      this.parseTimestamp(line)
+    if (!this.isIndex(this.line)) {
+      this.parseTimestamp()
     }
   }
 
@@ -93,24 +91,24 @@ export class ParserSRT extends Parser {
     return hours + minutes + seconds + milliseconds
   }
 
-  private parseTimestamp(line: string) {
+  private parseTimestamp() {
     try {
       this.node = {
         type: 'cue',
         data: {
-          ...this.getTimestamps(line),
+          ...this.getTimestamps(this.line),
           text: ''
         }
       }
     } catch (err) {
-      throw this.getError('timestamp', this.row, line)
+      throw this.getError('timestamp', this.row, this.line)
     }
 
     this.expect = 'text'
   }
 
-  private parseText(line: string) {
-    if (this.buffer.length > 0 && this.isTimestamp(line)) {
+  private parseText() {
+    if (this.buffer.length > 0 && this.isTimestamp(this.line)) {
       const lastIndex = this.buffer.length - 1
 
       if (this.isIndex(this.buffer[lastIndex])) {
@@ -118,9 +116,9 @@ export class ParserSRT extends Parser {
       }
 
       this.pushNode()
-      this.parseTimestamp(line)
+      this.parseTimestamp()
     } else {
-      this.buffer.push(line)
+      this.buffer.push(this.line)
     }
   }
 
