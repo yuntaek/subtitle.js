@@ -3,7 +3,7 @@ import { parse } from '../src'
 
 test.each(utils.fixtures)('parse SRT fixture: %s', async fixture => {
   const buffer = await utils.pipeline(
-    utils.getFixtureStream(fixture, 'srt').pipe(parse())
+    utils.getFixtureStream(fixture, 'srt').pipe(parse({ format: 'SRT' }))
   )
   const expected = JSON.parse(await utils.getFixture(fixture, 'srt.json'))
 
@@ -12,7 +12,7 @@ test.each(utils.fixtures)('parse SRT fixture: %s', async fixture => {
 
 test.each(utils.fixtures)('parse VTT fixture: %s', async fixture => {
   const buffer = await utils.pipeline(
-    utils.getFixtureStream(fixture, 'vtt').pipe(parse())
+    utils.getFixtureStream(fixture, 'vtt').pipe(parse({ format: 'WebVTT' }))
   )
   const expected = JSON.parse(await utils.getFixture(fixture, 'vtt.json'))
 
@@ -26,7 +26,7 @@ Foo Bar
 {{ THIS IS A INVALID TIMESTAMP }}
 `)
 
-  stream.pipe(parse()).on('error', err => {
+  stream.pipe(parse({ format: 'SRT' })).on('error', err => {
     expect(err).toEqual(
       new Error(`expected timestamp at row 2, but received: "Foo Bar"`)
     )

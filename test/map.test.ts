@@ -38,7 +38,7 @@ Welcome to the Planet.\n`)
   expect.assertions(2)
 
   stream
-    .pipe(parse())
+    .pipe(parse({ format: 'SRT' }))
     .pipe(map(callback))
     .on('data', (chunk: Node) => {
       buffer.push(chunk)

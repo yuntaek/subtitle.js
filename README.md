@@ -37,7 +37,7 @@ import fs from 'fs'
 import { parse, resync, stringify } from 'subtitle'
 
 fs.createReadStream('./my-subtitles.srt')
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT' }))
   .pipe(resync(-100))
   .pipe(stringify({ format: 'WebVTT' }))
   .pipe(fs.createWriteStream('./my-subtitles.vtt'))
@@ -49,7 +49,7 @@ It also provides functions like `map` and `filter`:
 import { parse, map, filter, stringify } from 'subtitle'
 
 inputStream
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT' }))
   .pipe(
     filter(
       // strips all cues that contains "𝅘𝅥𝅮"
@@ -75,7 +75,7 @@ Besides the stream functions, this module also provides synchronous functions li
 ```ts
 import { parseSync, stringifySync } from 'subtitle'
 
-const nodes = parseSync(srtContent)
+const nodes = parseSync(srtContent, { format: 'SRT' })
 
 // do something with your subtitles
 // ...
@@ -100,7 +100,7 @@ The module exports the following functions:
 
 ### parse
 
-- `parse(): DuplexStream`
+- `parse({ format: 'SRT' | 'WebVTT' }): DuplexStream`
 
 It returns a Duplex stream for parsing subtitle contents (SRT or WebVTT).
 
@@ -108,7 +108,7 @@ It returns a Duplex stream for parsing subtitle contents (SRT or WebVTT).
 import { parse } from 'subtitle'
 
 inputStream
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT' }))
   .on('data', node => {
     console.log('parsed node:', node)
   })
@@ -120,7 +120,7 @@ Check out the [Examples](#examples) section for more use cases.
 
 ### parseSync
 
-- `parseSync(input: string): Node[]`
+- `parseSync(input: string, { format: 'SRT' | 'WebVTT' }): Node[]`
 
 > **NOTE**: For better perfomance, consider using the stream-based `parse` function
 
@@ -133,7 +133,7 @@ import fs from 'fs'
 
 const input = fs.readFileSync('awesome-movie.srt', 'utf8')
 
-parseSync(input)
+parseSync(input, { format: 'SRT' })
 
 // returns an array like this:
 [
@@ -160,7 +160,7 @@ parseSync(input)
 
 ### stringify
 
-- `stringify({ format: 'SRT' | 'vtt' }): DuplexStream`
+- `stringify({ format: 'SRT' | 'WebVTT' }): DuplexStream`
 
 It returns a Duplex that receives parsed nodes and transmits the node formatted in SRT or WebVTT:
 
@@ -202,7 +202,7 @@ A useful Duplex for manipulating parsed nodes. It works similar to the `Array.ma
 import { parse, map, stringify } from 'subtitle'
 
 inputStream
-  .pipe(parse())
+  .pipe(parse({ format: 'WebVTT' }))
   .pipe(map((node, index) => {
     if (node.type === 'cue') {
       node.data.text = node.data.text.toUpperCase()
@@ -224,7 +224,7 @@ A useful Duplex for filtering parsed nodes. It works similar to the `Array.filte
 import { parse, filter, stringify } from 'subtitle'
 
 inputStream
-  .pipe(parse())
+  .pipe(parse({ format: 'WebVTT' }))
   .pipe(filter((node, index) => {
     return !(node.type === 'cue' && node.data.text.includes('𝅘𝅥𝅮'))
   }))
@@ -243,7 +243,7 @@ import { parse, resync, stringify } from 'subtitle'
 
 // Advance subtitles by 1s
 readableStream
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT'  }))
   .pipe(resync(1000))
   .pipe(outputStream)
 
@@ -333,7 +333,7 @@ import fs from 'fs'
 import { parse, stringify } from 'subtitle'
 
 fs.createReadStream('./source.srt')
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT' }))
   .pipe(stringify({ format: 'WebVTT' }))
   .pipe(fs.createWriteStream('./dest.vtt'))
 ```
@@ -348,7 +348,7 @@ import extract from 'rip-subtitles'
 import { parse, stringify } from 'subtitle'
 
 extract('video.mkv')
-  .pipe(parse())
+  .pipe(parse({ format: 'SRT' }))
   .pipe(stringify({ format: 'WebVTT' }))
   .pipe(fs.createWriteStream('./video.vtt'))
 ```
@@ -369,7 +369,7 @@ list.push({
   }
 })
 
-stringifySync(list)
+stringifySync(list, { format: 'WebVTT' })
 ```
 
 ## License

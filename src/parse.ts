@@ -1,10 +1,12 @@
 import multipipe from 'multipipe'
 import split2 from 'split2'
+import { FormatOptions } from '.'
 import { createDuplex } from './utils'
-import { Parser } from './Parser'
+import { createParser } from './Parser'
 
-export const parse = () => {
-  const parser = new Parser({
+export const parse = ({ format }: FormatOptions) => {
+  const parser = createParser({
+    format,
     push: node => outputStream.push(node)
   })
 

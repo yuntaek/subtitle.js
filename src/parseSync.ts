@@ -1,9 +1,14 @@
-import { Parser } from './Parser'
-import { NodeList } from '.'
+import { createParser } from './Parser'
+import { NodeList, FormatOptions } from '.'
 
-export const parseSync = (input: string): NodeList => {
+export const parseSync = (
+  input: string,
+  { format }: FormatOptions
+): NodeList => {
   const buffer: NodeList = []
-  const parser = new Parser({
+
+  const parser = createParser({
+    format,
     push: node => buffer.push(node)
   })
 

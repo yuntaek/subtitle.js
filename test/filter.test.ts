@@ -17,7 +17,7 @@ Welcome to the Planet.\n`)
 
   const data = await pipeline(
     stream
-      .pipe(parse())
+      .pipe(parse({ format: 'SRT' }))
       .pipe(
         filter(node => !(node.type === 'cue' && node.data.text.includes('𝅘𝅥𝅮')))
       )

@@ -2,15 +2,15 @@ import { fixtures, getFixture } from '../test-utils'
 import { parseSync } from '../src'
 
 test.each(fixtures)('parse SRT fixture: %s.srt', async filename => {
-  expect(parseSync(await getFixture(filename, 'srt'))).toEqual(
-    JSON.parse(await getFixture(filename, 'srt.json'))
-  )
+  expect(
+    parseSync(await getFixture(filename, 'srt'), { format: 'SRT' })
+  ).toEqual(JSON.parse(await getFixture(filename, 'srt.json')))
 })
 
 test.each(fixtures)('parse VTT fixture: %s.vtt', async filename => {
-  expect(parseSync(await getFixture(filename, 'vtt'))).toEqual(
-    JSON.parse(await getFixture(filename, 'vtt.json'))
-  )
+  expect(
+    parseSync(await getFixture(filename, 'vtt'), { format: 'WebVTT' })
+  ).toEqual(JSON.parse(await getFixture(filename, 'vtt.json')))
 })
 
 test('parse SRT captions', () => {
@@ -30,7 +30,7 @@ Welcome to the Planet.
     .trim()
     .concat('\n')
 
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -78,7 +78,7 @@ Welcome to the Planet.
     .trim()
     .concat('\n')
 
-  expect(parseSync(vtt)).toMatchInlineSnapshot(`
+  expect(parseSync(vtt, { format: 'WebVTT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": "WEBVTT - Test VTT cues",
@@ -134,7 +134,7 @@ Welcome to the Planet.
     .trim()
     .concat('\n')
 
-  expect(parseSync(vtt)).toMatchInlineSnapshot(`
+  expect(parseSync(vtt, { format: 'WebVTT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": "WEBVTT - Test VTT cues
@@ -178,7 +178,7 @@ test('parse 00:00:00,000 caption', () => {
 00:00:00,000 --> 00:00:00,100
 Hi.
 `
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -202,7 +202,7 @@ Something something something... dark side
 2
 00:00:00,100 --> 00:00:00,200
 Hi.`
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -236,7 +236,7 @@ Who else could they send?
 2
 00:00:00,100 --> 00:00:00,200
 Who else could be trusted?`
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -270,7 +270,7 @@ test('correctly parse captions with empty first lines', () => {
 2
 00:00:00,100 --> 00:00:00,200
 Fora Bolsonaro`
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -307,7 +307,7 @@ Welcome to the Planet.
     .trim()
     .concat('\n')
 
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
@@ -342,7 +342,7 @@ test('invalid timestamps should throw an error', () => {
 Invalid timestamp
   `
 
-  expect(() => parseSync(srt)).toThrow(
+  expect(() => parseSync(srt, { format: 'SRT' })).toThrow(
     new Error('expected timestamp at row 1, but received: "Invalid timestamp"')
   )
 
@@ -352,7 +352,7 @@ Invalid timestamp
 Invalid timestamp
   `
 
-  expect(() => parseSync(srt2)).toThrow(
+  expect(() => parseSync(srt2, { format: 'SRT' })).toThrow(
     new Error('expected timestamp at row 2, but received: "999Foo"')
   )
 })
@@ -372,7 +372,7 @@ To the Earth Planet.
 The most beautiful planet in the whole universe.
 `
 
-  expect(parseSync(srt)).toMatchInlineSnapshot(`
+  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
     Array [
       Object {
         "data": Object {
