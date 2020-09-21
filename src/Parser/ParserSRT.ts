@@ -3,11 +3,12 @@ import { Parser } from './Parser'
 
 export type Expectation = 'header' | 'id' | 'timestamp' | 'text'
 
-const RE_TIMESTAMP = /^((?:\d{1,}:)?\d{2}:\d{2}[,.]\d{3}) --> ((?:\d{1,}:)?\d{2}:\d{2}[,.]\d{3})(?: (.*))?$/
-
 export class ParserSRT extends Parser {
   private isWebVTT: boolean = false
   private expect: Expectation = 'header'
+
+  protected reTimestamp = /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/
+  protected reTimestampGroup = /^(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})$/
 
   protected processLine() {
     const parse = {
@@ -59,7 +60,7 @@ export class ParserSRT extends Parser {
   }
 
   protected getTimestamps(line: string): Timestamp {
-    const match = RE_TIMESTAMP.exec(line)
+    const match = this.reTimestampGroup.exec(line)
 
     if (!match) {
       throw new Error('Invalid timestamp format')
@@ -78,7 +79,7 @@ export class ParserSRT extends Parser {
   }
 
   protected timestampToMilliseconds(timestamp: string): number {
-    const match = timestamp.match(/^(?:(\d{1,}):)?(\d{2}):(\d{2})[,.](\d{3})$/)
+    const match = timestamp.match(this.reTimestamp)
 
     if (!match) {
       throw new Error('Invalid timestamp')
@@ -143,6 +144,6 @@ export class ParserSRT extends Parser {
   }
 
   private isTimestamp(line: string): boolean {
-    return RE_TIMESTAMP.test(line)
+    return this.reTimestampGroup.test(line)
   }
 }
