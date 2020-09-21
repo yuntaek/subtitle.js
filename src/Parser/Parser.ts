@@ -47,22 +47,17 @@ export class Parser {
   }
 
   protected trimBuffer() {
-    while (true) {
-      const lastItem = this.buffer[this.buffer.length - 1]
-      if (['', '\n'].includes(lastItem)) {
-        this.buffer.pop()
-      } else {
-        break
+    ;['first', 'last'].forEach(method => {
+      while (true) {
+        const item = this.buffer[
+          method === 'first' ? 0 : this.buffer.length - 1
+        ]
+        if (['', '\n'].includes(item)) {
+          this.buffer[method === 'first' ? 'shift' : 'pop']()
+        } else {
+          break
+        }
       }
-    }
-
-    while (true) {
-      const firstItem = this.buffer[0]
-      if (['', '\n'].includes(firstItem)) {
-        this.buffer.shift()
-      } else {
-        break
-      }
-    }
+    })
   }
 }
