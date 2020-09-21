@@ -47,9 +47,11 @@ export class Parser {
     this.buffer = []
   }
 
-  protected getError(expected: string, index: number, row: string): Error {
+  protected getError(expected: string): Error {
     return new Error(
-      `expected ${expected} at row ${index + 1}, but received: "${row}"`
+      `expected ${expected} at row ${this.row + 1}, but received: "${
+        this.line
+      }"`
     )
   }
 

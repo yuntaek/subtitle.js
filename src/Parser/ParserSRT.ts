@@ -1,11 +1,8 @@
 import { Node, Timestamp } from '..'
 import { Parser } from './Parser'
 
-export type Expectation = 'header' | 'id' | 'timestamp' | 'text'
-
 export class ParserSRT extends Parser {
-  private isWebVTT: boolean = false
-  protected expect: Expectation = 'header'
+  protected expect = 'id'
 
   protected reTimestamp = /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/
   protected reTimestampGroup = /^(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})$/
@@ -18,39 +15,14 @@ export class ParserSRT extends Parser {
 
   protected getParsers() {
     return {
-      header: this.parseHeader.bind(this),
       id: this.parseId.bind(this),
       timestamp: this.parseTimestamp.bind(this),
       text: this.parseText.bind(this)
     }
   }
 
-  protected parseHeader() {
-    if (!this.isWebVTT) {
-      this.isWebVTT = /^WEBVTT/.test(this.line)
-
-      if (this.isWebVTT) {
-        this.node.type = 'header'
-      } else {
-        this.parseId()
-        return
-      }
-    }
-
-    this.buffer.push(this.line)
-
-    if (!this.line) {
-      this.expect = 'id'
-      return
-    }
-  }
-
   protected parseId() {
     this.expect = 'timestamp'
-
-    if (this.node.type === 'header') {
-      this.pushNode()
-    }
 
     if (!this.isIndex(this.line)) {
       this.parseTimestamp()
@@ -97,7 +69,7 @@ export class ParserSRT extends Parser {
         }
       }
     } catch (err) {
-      throw this.getError('timestamp', this.row, this.line)
+      throw this.getError('timestamp')
     }
 
     this.expect = 'text'
@@ -118,18 +90,13 @@ export class ParserSRT extends Parser {
     }
   }
 
-  private pushNode(): void {
+  protected pushNode(): void {
     if (this.node.type === 'cue') {
       this.trimBuffer()
       this.node.data!.text = this.buffer.join('\n')
     }
 
-    if (this.node.type === 'header') {
-      this.node.data = this.buffer.join('\n').trim()
-    }
-
     this.push(this.node as Node)
-
     this.reset()
   }
 
