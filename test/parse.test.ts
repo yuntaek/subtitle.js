@@ -19,7 +19,7 @@ test.each(utils.fixtures)('parse VTT fixture: %s', async fixture => {
   expect(buffer).toEqual(expected)
 })
 
-test('error handling', done => {
+test('error handling for invalid timestamp', done => {
   const stream = utils.createStreamFromString(`
 1
 Foo Bar
@@ -29,6 +29,40 @@ Foo Bar
   stream.pipe(parse({ format: 'SRT' })).on('error', err => {
     expect(err).toEqual(
       new Error(`expected timestamp at row 2, but received: "Foo Bar"`)
+    )
+    done()
+  })
+})
+
+test('error handling for invalid WEBVTT header', done => {
+  const stream = utils.createStreamFromString(`
+INVALID WEBVTT HEADER
+
+1
+12:34.647 --> 12:35.489
+Some text here
+`)
+
+  stream.pipe(parse({ format: 'WebVTT' })).on('error', err => {
+    expect(err).toEqual(
+      new Error(
+        `expected WEBVTT header at row 1, but received: "INVALID WEBVTT HEADER"`
+      )
+    )
+    done()
+  })
+})
+
+test('error handling for missing WEBVTT header', done => {
+  const stream = utils.createStreamFromString(`
+1
+4:28.123 --> 4:29.899
+Hello, World!
+`)
+
+  stream.pipe(parse({ format: 'WebVTT' })).on('error', err => {
+    expect(err).toEqual(
+      new Error(`expected WEBVTT header at row 1, but received: "1"`)
     )
     done()
   })
