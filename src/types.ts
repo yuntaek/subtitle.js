@@ -1,11 +1,11 @@
 export interface Timestamp {
   start: number
   end: number
-  settings?: string
 }
 
 export interface Cue extends Timestamp {
   text: string
+  settings?: string
 }
 
 export type Format = 'SRT' | 'WebVTT'

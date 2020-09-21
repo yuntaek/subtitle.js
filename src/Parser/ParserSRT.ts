@@ -25,7 +25,7 @@ export class ParserSRT extends Parser {
     }
   }
 
-  private parseHeader() {
+  protected parseHeader() {
     if (!this.isWebVTT) {
       this.isWebVTT = /^WEBVTT/.test(this.line)
 
@@ -45,7 +45,7 @@ export class ParserSRT extends Parser {
     }
   }
 
-  private parseId() {
+  protected parseId() {
     this.expect = 'timestamp'
 
     if (this.node.type === 'header') {
@@ -69,10 +69,6 @@ export class ParserSRT extends Parser {
       end: this.timestampToMilliseconds(match[2])
     }
 
-    if (match[3]) {
-      timestamp.settings = match[3]
-    }
-
     return timestamp
   }
 
@@ -91,7 +87,7 @@ export class ParserSRT extends Parser {
     return hours + minutes + seconds + milliseconds
   }
 
-  private parseTimestamp() {
+  protected parseTimestamp() {
     try {
       this.node = {
         type: 'cue',
@@ -107,7 +103,7 @@ export class ParserSRT extends Parser {
     this.expect = 'text'
   }
 
-  private parseText() {
+  protected parseText() {
     if (this.buffer.length > 0 && this.isTimestamp(this.line)) {
       const lastIndex = this.buffer.length - 1
 
