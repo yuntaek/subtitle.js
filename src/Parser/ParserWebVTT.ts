@@ -40,6 +40,14 @@ export class ParserWebVTT extends ParserSRT {
     }
   }
 
+  protected parseId() {
+    this.expect = 'timestamp'
+
+    if (!this.isIndex(this.line)) {
+      this.parseTimestamp()
+    }
+  }
+
   protected parseTimestamp() {
     super.parseTimestamp()
     this.parseSettings()

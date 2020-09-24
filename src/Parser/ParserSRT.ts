@@ -22,11 +22,11 @@ export class ParserSRT extends Parser {
   }
 
   protected parseId() {
-    this.expect = 'timestamp'
-
     if (!this.isIndex(this.line)) {
-      this.parseTimestamp()
+      throw this.getError('number identifier')
     }
+
+    this.expect = 'timestamp'
   }
 
   protected getTimestamps(line: string): Timestamp {
@@ -100,7 +100,7 @@ export class ParserSRT extends Parser {
     this.reset()
   }
 
-  private isIndex(line: string): boolean {
+  protected isIndex(line: string): boolean {
     return /^\d+$/.test(line.trim())
   }
 

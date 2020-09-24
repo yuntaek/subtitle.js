@@ -292,43 +292,49 @@ Fora Bolsonaro`
   `)
 })
 
-test('indexes should be optional', () => {
-  const srt = `
-02:12:34,647 --> 02:12:35,489
+test('indexes should be optional for WEBVTT', () => {
+  const vtt = `
+WEBVTT
+
+12:34.647 --> 12:35.489
 Hi.
 
 2
-02:12:36,415 --> 02:12:37,758
+13:34.647 --> 13:35.489
 Lois Lane.
 
-02:12:38,584 --> 02:12:40,120
+14:34.647 --> 14:35.489
 Welcome to the Planet.
   `
     .trim()
     .concat('\n')
 
-  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
+  expect(parseSync(vtt, { format: 'WebVTT' })).toMatchInlineSnapshot(`
     Array [
       Object {
+        "data": "WEBVTT",
+        "type": "header",
+      },
+      Object {
         "data": Object {
-          "end": 7955489,
-          "start": 7954647,
+          "end": 755489,
+          "start": 754647,
           "text": "Hi.",
         },
         "type": "cue",
       },
       Object {
         "data": Object {
-          "end": 7957758,
-          "start": 7956415,
+          "end": 815489,
+          "start": 814647,
           "text": "Lois Lane.",
         },
         "type": "cue",
       },
       Object {
         "data": Object {
-          "end": 7960120,
-          "start": 7958584,
+          "end": 875489,
+          "start": 874647,
           "text": "Welcome to the Planet.",
         },
         "type": "cue",
@@ -338,42 +344,53 @@ Welcome to the Planet.
 })
 
 test('invalid timestamps should throw an error', () => {
-  const srt = `
-Invalid timestamp
+  const vtt = `
+WEBVTT
+
+x= timestamp should be here =x
+Text here
   `
 
-  expect(() => parseSync(srt, { format: 'SRT' })).toThrow(
-    new Error('expected timestamp at row 1, but received: "Invalid timestamp"')
+  expect(() => parseSync(vtt, { format: 'WebVTT' })).toThrow(
+    new Error(
+      'expected timestamp at row 3, but received: "x= timestamp should be here =x"'
+    )
   )
 
-  const srt2 = `
+  const srt = `
 1
 999Foo
 Invalid timestamp
   `
 
-  expect(() => parseSync(srt2, { format: 'SRT' })).toThrow(
+  expect(() => parseSync(srt, { format: 'SRT' })).toThrow(
     new Error('expected timestamp at row 2, but received: "999Foo"')
   )
 })
 
 test('last captions with more than one line', () => {
-  const srt = `
-02:12:34,647 --> 02:12:35,489
+  const vtt = `
+WEBVTT
+
+02:12:34.647 --> 02:12:35.489
 Hi.
 
 2
-02:12:36,415 --> 02:12:37,758
+02:12:36.415 --> 02:12:37.758
 Lois Lane.
 
-02:12:38,584 --> 02:12:40,120
+02:12:38.584 --> 02:12:40.120
 Welcome to the Planet.
 To the Earth Planet.
 The most beautiful planet in the whole universe.
 `
 
-  expect(parseSync(srt, { format: 'SRT' })).toMatchInlineSnapshot(`
+  expect(parseSync(vtt, { format: 'WebVTT' })).toMatchInlineSnapshot(`
     Array [
+      Object {
+        "data": "WEBVTT",
+        "type": "header",
+      },
       Object {
         "data": Object {
           "end": 7955489,
