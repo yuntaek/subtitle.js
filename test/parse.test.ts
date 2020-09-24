@@ -67,3 +67,20 @@ Hello, World!
     done()
   })
 })
+
+test('error handling for invalid identifiers', done => {
+  const stream = utils.createStreamFromString(`
+INVALID_ID
+00:02:15,202 --> 00:02:18,547
+Hello, World!
+`)
+
+  stream.pipe(parse({ format: 'SRT' })).on('error', err => {
+    expect(err).toEqual(
+      new Error(
+        `expected number identifier at row 1, but received: "INVALID_ID"`
+      )
+    )
+    done()
+  })
+})
