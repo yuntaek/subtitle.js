@@ -1,5 +1,5 @@
 import stripBom from 'strip-bom'
-import { Node, RE_TIMESTAMP, parseTimestamps,Cue} from '.'
+import { Node, RE_TIMESTAMP, parseTimestamps, Cue } from '.'
 
 export type Pusher = (node: Node) => void
 
@@ -16,7 +16,6 @@ interface ParsedSetting {
   setting: string
   line: string
 }
-
 
 export class Parser {
   private push: Pusher
@@ -136,12 +135,12 @@ export class Parser {
       this.pushNode()
       this.parseTimestamp(line)
     } else {
-      if(!this.state.isWebVTT){
+      if (!this.state.isWebVTT) {
         const result = this.parseSetting(line)
-        if(result){
-          this.state.buffer.push(result.line);
-          this.state.node.data= <Cue>this.state.node.data
-          this.state.node.data.settings =result.setting
+        if (result) {
+          this.state.buffer.push(result.line)
+          this.state.node.data = this.state.node.data as Cue
+          this.state.node.data.settings = result.setting
           return
         }
       }
@@ -175,7 +174,7 @@ export class Parser {
   }
   private parseSetting(line: string): ParsedSetting | undefined {
     const parsedLine = line.match(/^\{\\(an[1-9])\}(.*)/)
-   
+
     if (parsedLine && parsedLine.length === 3) {
       return {
         line: parsedLine[2],
