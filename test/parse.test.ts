@@ -19,6 +19,13 @@ test.each(utils.fixtures)('parse VTT fixture: %s', async fixture => {
   expect(buffer).toEqual(expected)
 })
 
+test.skip('parse SRT LalaLand:', async()=>{
+  const buffer = await utils.pipeline(
+    utils.getFixtureStream('./LaLaLand','srt').pipe(parse())
+  )
+  const expected = JSON.parse(await utils.getFixture('./LaLaLand','srt.json'))
+  expect(buffer).toEqual(expected)
+})
 test('error handling', done => {
   const stream = utils.createStreamFromString(`
 1

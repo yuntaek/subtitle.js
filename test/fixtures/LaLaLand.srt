@@ -14,7 +14,7 @@ for downtown Los Angeles.
 
 4
 00:00:30,901 --> 00:00:33,000
-Overnight lows of 75. [...]
+{\an8}Overnight lows of 75. [...]
 
 5
 00:01:05,401 --> 00:01:07,300

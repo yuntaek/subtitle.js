@@ -1,5 +1,5 @@
 import stripBom from 'strip-bom'
-import { Node, RE_TIMESTAMP, parseTimestamps } from '.'
+import { Node, RE_TIMESTAMP, parseTimestamps,Cue} from '.'
 
 export type Pusher = (node: Node) => void
 
@@ -11,6 +11,12 @@ export interface ParseState {
   node: Partial<Node>
   buffer: string[]
 }
+
+interface ParsedSetting {
+  setting: string
+  line: string
+}
+
 
 export class Parser {
   private push: Pusher
@@ -130,8 +136,53 @@ export class Parser {
       this.pushNode()
       this.parseTimestamp(line)
     } else {
+      if(!this.state.isWebVTT){
+        const result = this.parseSetting(line)
+        if(result){
+          this.state.buffer.push(result.line);
+          this.state.node.data= <Cue>this.state.node.data
+          this.state.node.data.settings =result.setting
+          return
+        }
+      }
       this.state.buffer.push(line)
     }
+  }
+
+  private transitAssToLineStyle(ass: string): string {
+    switch (ass) {
+      case 'an1':
+        return 'position=5% align=start'
+      case 'an2':
+        return 'position=5% align=center'
+      case 'an3':
+        return 'position=5% align=end'
+      case 'an4':
+        return 'position=50% align=start'
+      case 'an5':
+        return 'position=50% align=center'
+      case 'an6':
+        return 'position=50% align=end'
+      case 'an7':
+        return 'position=95% align=start'
+      case 'an8':
+        return 'position=95% align=center'
+      case 'an9':
+        return 'position=95% align=end'
+      default:
+        return ''
+    }
+  }
+  private parseSetting(line: string): ParsedSetting | undefined {
+    const parsedLine = line.match(/^\{\\(an[1-9])\}(.*)/)
+   
+    if (parsedLine && parsedLine.length === 3) {
+      return {
+        line: parsedLine[2],
+        setting: this.transitAssToLineStyle(parsedLine[1])
+      }
+    }
+    return
   }
 
   private pushNode(): void {

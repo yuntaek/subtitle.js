@@ -28,7 +28,8 @@
         "data": {
             "start": 30901,
             "end": 33000,
-            "text": "Overnight lows of 75. [...]"
+            "text": "Overnight lows of 75. [...]",
+            "settings" : "position=95% align=center"
         }
     },
     {
