@@ -7,6 +7,7 @@ export const createDuplex = (options: DuplexOptions) =>
   new Duplex({
     objectMode: true,
     autoDestroy: false,
+    allowHalfOpen: false,
     read() {},
     ...options
   })
