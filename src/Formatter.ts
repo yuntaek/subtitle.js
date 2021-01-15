@@ -91,8 +91,9 @@ export class Formatter {
       `${formatTimestamp(cue.start, options)} --> ${formatTimestamp(
         cue.end,
         options
-      )}${options.format ===
-        ('WebVTT' && cue.settings ? ' ' + cue.settings : '')}`,
+      )}${
+        options.format === 'WebVTT' && cue.settings ? ' ' + cue.settings : ''
+      }`,
       cue.text,
       ''
     ].join('\n')
